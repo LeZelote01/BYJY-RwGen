@@ -1,0 +1,9 @@
+{
+  "research_mode": true,
+  "study_id": "DEFENSIVE-CYBER-2024",
+  "institution": "Academic Research Facility",
+  "encryption_key": "RESEARCH_KEY_PLACEHOLDER",
+  "target_extensions": [".txt", ".doc", ".pdf"],
+  "excluded_paths": ["C:\\Windows", "C:\\Program Files"],
+  "contact": "security-research@university.edu"
+}

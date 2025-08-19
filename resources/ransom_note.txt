@@ -1,0 +1,24 @@
+=== SECURITY RESEARCH NOTIFICATION ===
+
+This system has been used for cybersecurity research purposes.
+Files have been encrypted using advanced cryptographic methods.
+
+*** THIS IS FOR ACADEMIC RESEARCH ONLY ***
+*** DO NOT USE FOR MALICIOUS PURPOSES ***
+
+Research Contact: security-research@university.edu
+Study ID: DEFENSIVE-CYBER-2024
+Institution: Academic Research Facility
+
+If you are seeing this message in a production environment,
+please contact your IT security team immediately.
+
+This tool is designed to help security professionals understand
+ransomware behavior for defensive purposes only.
+
+Recovery Instructions:
+1. Contact your IT security team
+2. Reference Study ID: DEFENSIVE-CYBER-2024
+3. Provide this notification as evidence
+
+=== END RESEARCH NOTIFICATION ===
