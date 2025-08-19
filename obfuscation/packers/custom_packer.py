@@ -134,7 +134,7 @@ class AdvancedCustomPacker:
         decryptor += bytes.fromhex(f"31{self.reg_code(counter_reg)}")  # XOR counter_reg, counter_reg
         
         # Decryption loop
-        loop_label = b"\x90" * 5  # Placeholder
+        loop_start_offset = len(decryptor)  # Remember current position
         decryptor += loop_label
         
         # Load byte
@@ -152,7 +152,8 @@ class AdvancedCustomPacker:
         
         # Loop condition
         decryptor += bytes.fromhex(f"39{self.reg_code(size_reg)}{self.reg_code(counter_reg)}")
-        decryptor += bytes.fromhex(f"75") + loop_label[0:1]  # JNZ loop
+        jump_offset = -(len(decryptor) - loop_start_offset + 2)
+        decryptor += bytes([0x75, jump_offset & 0xFF])  # JNZ loop
         
         return decryptor
     

@@ -7,8 +7,8 @@ import hashlib
 import json
 import pefile
 import lief
-from Cryptodome.Cipher import AES
-from Cryptodome.Util.Padding import pad
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 from obfuscation import ControlFlowFlattening, StringEncryptionPass, CustomPacker, StringObfuscator
 
 class AdvancedWindowsBuilder:

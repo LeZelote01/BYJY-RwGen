@@ -6,6 +6,7 @@
 #include <array>
 #include <algorithm>
 #include <stdexcept>
+#include <random>
 #include <openssl/evp.h>
 
 class AdvancedStringObfuscator {
