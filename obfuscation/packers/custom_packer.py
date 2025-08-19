@@ -11,6 +11,10 @@ import struct
 import hashlib
 import zlib
 import lzma
+import json
+import base64
+import tempfile
+import subprocess
 from pathlib import Path
 from dataclasses import dataclass
 from typing import List, Dict, Tuple, Optional
@@ -18,9 +22,6 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-import base64
-import tempfile
-import subprocess
 
 @dataclass
 class PackerConfig:
