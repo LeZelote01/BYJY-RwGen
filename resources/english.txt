@@ -1,0 +1,133 @@
+╔═══════════════════════════════════════════════════════════════════════════════════╗
+║                                   ATTENTION!                                         ║
+║                          YOUR FILES HAVE BEEN ENCRYPTED                              ║
+╚═══════════════════════════════════════════════════════════════════════════════════════╝
+
+What happened to your files?
+────────────────────────────────────────────────────────────────────────────────────────
+
+All your important files including documents, photos, videos, databases, and other 
+files have been encrypted with military-grade encryption algorithms. The original 
+files have been securely deleted and are unrecoverable without our decryption key.
+
+Files affected: {ENCRYPTED_FILE_COUNT}
+System ID: {SYSTEM_ID}
+Encryption Date: {ENCRYPTION_DATE}
+
+Can I recover my files?
+────────────────────────────────────────────────────────────────────────────────────────
+
+Yes! We guarantee that you can recover all your files safely and easily. However, 
+you have LIMITED TIME to make the payment. After the deadline, the decryption key 
+will be permanently destroyed and your files will be lost forever.
+
+⏰ Time remaining: {COUNTDOWN_TIMER}
+
+How to get your files back?
+────────────────────────────────────────────────────────────────────────────────────────
+
+1. Purchase Bitcoin worth ${PAYMENT_AMOUNT_USD} ({PAYMENT_AMOUNT_BTC} BTC)
+   
+2. Send the Bitcoin to this address:
+   {BITCOIN_ADDRESS}
+   
+3. After payment confirmation, contact us with your system ID:
+   Email: {CONTACT_EMAIL}
+   Telegram: {TELEGRAM_CONTACT}
+   Tor Support: {ONION_URL}
+
+4. We will provide you with the decryption tool and instructions
+
+💰 PAYMENT INFORMATION:
+────────────────────────────────────────────────────────────────────────────────────────
+Payment Amount: {PAYMENT_AMOUNT_BTC} BTC (${PAYMENT_AMOUNT_USD})
+Bitcoin Address: {BITCOIN_ADDRESS}
+Alternative (Monero): {MONERO_ADDRESS}
+
+⚡ EARLY PAYMENT DISCOUNT:
+Pay within 24 hours and get 25% discount!
+Discounted Amount: {DISCOUNTED_AMOUNT_BTC} BTC
+
+⚠️ PRICE INCREASES:
+After 48 hours: Payment doubles to {DOUBLED_AMOUNT_BTC} BTC
+After 72 hours: Files permanently destroyed!
+
+How to buy Bitcoin?
+────────────────────────────────────────────────────────────────────────────────────────
+
+1. Visit any cryptocurrency exchange:
+   • Coinbase (coinbase.com)
+   • Binance (binance.com)  
+   • Kraken (kraken.com)
+   • LocalBitcoins (localbitcoins.com)
+
+2. Create account and verify identity
+3. Purchase Bitcoin with credit card or bank transfer
+4. Send Bitcoin to our address above
+
+PROOF OF DECRYPTION:
+────────────────────────────────────────────────────────────────────────────────────────
+
+We have decrypted 3 of your files as proof that we can restore everything:
+• {PROOF_FILE_1}
+• {PROOF_FILE_2}  
+• {PROOF_FILE_3}
+
+These files have been restored to your desktop.
+
+⚠️ WARNING - DO NOT:
+────────────────────────────────────────────────────────────────────────────────────────
+
+❌ Try to decrypt files yourself - you will permanently damage them
+❌ Use third-party decryption tools - they don't work and corrupt files
+❌ Contact law enforcement - this will only delay recovery
+❌ Ignore this message - files will be permanently destroyed
+❌ Try to remove this program - backups will be activated
+
+GUARANTEE:
+────────────────────────────────────────────────────────────────────────────────────────
+
+✅ We guarantee 100% file recovery after payment
+✅ We have successfully restored files for thousands of customers
+✅ We provide 24/7 support throughout the recovery process  
+✅ We are the ONLY ones who can decrypt your files
+
+FREQUENTLY ASKED QUESTIONS:
+────────────────────────────────────────────────────────────────────────────────────────
+
+Q: Why should I trust you?
+A: We are professionals. We have no interest in damaging your files - we want to be 
+   paid. If we didn't decrypt files after payment, no one would ever pay us.
+
+Q: How do I know you won't encrypt my files again?
+A: After decryption, we provide instructions on how to protect yourself. We don't 
+   target the same victim twice.
+
+Q: Can't I just restore from backup?
+A: We have identified and encrypted/deleted all your backups including shadow copies,
+   network drives, cloud storage, and external drives.
+
+Q: What if I don't pay?
+A: After 72 hours, your decryption key is permanently deleted. Your files will be 
+   lost forever. We recommend paying as soon as possible.
+
+CONTACT INFORMATION:
+────────────────────────────────────────────────────────────────────────────────────────
+
+📧 Email: {CONTACT_EMAIL}
+📱 Telegram: {TELEGRAM_CONTACT}  
+🔗 Tor Support: {ONION_URL}
+💬 Include your System ID in all communications: {SYSTEM_ID}
+
+═══════════════════════════════════════════════════════════════════════════════════════
+
+This incident could have been prevented with proper cybersecurity measures:
+• Regular offline backups
+• Updated antivirus software  
+• Employee security training
+• Network segmentation
+• Patch management
+
+For immediate file recovery, make payment now!
+
+═══════════════════════════════════════════════════════════════════════════════════════

